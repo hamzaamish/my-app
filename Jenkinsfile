@@ -15,7 +15,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                script {
+                script { // Ensure this block is clearly defined
                     // Build the Docker image
                     sh 'docker build -t $DOCKER_IMAGE .'
                 }
@@ -24,7 +24,7 @@ pipeline {
 
         stage('Push to Docker Hub') {
             steps {
-                script {
+                script { // Ensure this block is clearly defined
                     // Login to Docker Hub using credentials
                     withCredentials([usernamePassword(credentialsId: '4e00837e-a6dd-4314-af9e-c64a29a1ac84', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
@@ -37,7 +37,7 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
-                script {
+                script { // Ensure this block is clearly defined
                     // Add your deployment steps here
                     // For example, using kubectl to deploy the Docker image
                     // sh 'kubectl apply -f deployment.yml'
