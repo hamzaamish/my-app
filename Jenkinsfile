@@ -2,53 +2,45 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_USERNAME = 'hamzaamish' // Your Docker Hub username
-        DOCKER_PASSWORD = credentials('4e00837e-a6dd-4314-af9e-c64a29a1ac84') // Your Docker credentials ID
-        GIT_CREDENTIALS_ID = '1fa18606-48c2-4009-a485-b7b4cdc419c5' // Your GitHub credentials ID
+        DOCKER_IMAGE = 'hamzaamish/my-app:latest'
     }
 
     stages {
-        stage('Clone Repository') {
+        stage('Checkout SCM') {
             steps {
-                script {
-                    // Clone the repository with GitHub credentials
-                    withCredentials([usernamePassword(credentialsId: GIT_CREDENTIALS_ID, usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
-                        sh 'git clone https://$GIT_USERNAME:$GIT_PASSWORD@github.com/hamzaamish/my-app.git'
-                        dir('my-app') {
-                            // List the contents of the workspace for debugging
-                            sh 'ls -la'
-                        }
-                    }
-                }
+                // Checkout the code from the Git repository
+                git url: 'https://github.com/hamzaamish/my-app.git', credentialsId: 'your-git-credentials-id'
             }
         }
+
         stage('Build') {
             steps {
                 script {
-                    dir('my-app') {
-                        // Build the Docker image
-                        sh 'docker build -t hamzaamish/my-app:latest .'
-                    }
+                    // Build the Docker image
+                    sh 'docker build -t $DOCKER_IMAGE .'
                 }
             }
         }
+
         stage('Push to Docker Hub') {
             steps {
                 script {
-                    // Log in to Docker Hub
-                    sh "echo '${DOCKER_PASSWORD}' | docker login -u '${DOCKER_USERNAME}' --password-stdin"
-                    // Push the Docker image to Docker Hub
-                    sh 'docker push hamzaamish/my-app:latest'
+                    // Login to Docker Hub using credentials
+                    withCredentials([usernamePassword(credentialsId: '4e00837e-a6dd-4314-af9e-c64a29a1ac84', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+                        // Push the Docker image to Docker Hub
+                        sh 'docker push $DOCKER_IMAGE'
+                    }
                 }
             }
         }
+
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    dir('my-app') {
-                        // Deploy the application to Kubernetes
-                        sh 'kubectl apply -f deployment.yml'
-                    }
+                    // Add your deployment steps here
+                    // For example, using kubectl to deploy the Docker image
+                    // sh 'kubectl apply -f deployment.yml'
                 }
             }
         }
