@@ -3,18 +3,21 @@ pipeline {
 
     environment {
         DOCKER_USERNAME = 'hamzaamish' // Your Docker Hub username
-        DOCKER_PASSWORD = credentials('6faa9304-29cd-4ce1-9838-40aa3a77623e') // Your Jenkins credentials ID
+        DOCKER_PASSWORD = credentials('docker-credentials') // Your Jenkins credentials ID for Docker
+        GIT_CREDENTIALS_ID = 'github-credentials' // Your Jenkins credentials ID for GitHub
     }
 
     stages {
         stage('Clone Repository') {
             steps {
                 script {
-                    // Clone the repository manually
-                    sh 'git clone https://github.com/username/my-app.git' // Replace with your repository URL
-                    dir('my-app') {
-                        // List the contents of the workspace for debugging
-                        sh 'ls -la'
+                    // Clone the repository with credentials
+                    withCredentials([usernamePassword(credentialsId: GIT_CREDENTIALS_ID, usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+                        sh 'git clone https://$GIT_USERNAME:$GIT_PASSWORD@github.com/hamzaamish/my-app.git'
+                        dir('my-app') {
+                            // List the contents of the workspace for debugging
+                            sh 'ls -la'
+                        }
                     }
                 }
             }
@@ -53,10 +56,4 @@ pipeline {
 
     post {
         success {
-            echo 'Pipeline completed successfully!'
-        }
-        failure {
-            echo 'Pipeline failed!'
-        }
-    }
-}
+            echo 'Pipeline completed
