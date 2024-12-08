@@ -6,31 +6,38 @@ pipeline {
     }
 
     stages {
-        stage('Checkout SCM') {
+        stage('Checkout Code') {
             steps {
-                script { 
-                    git url: 'https://github.com/hamzaamish/my-app.git', credentialsId: 'your-git-credentials-id' // Replace with your actual Git credentials ID
-                }
+                // Checkout from GitHub repository with provided credentials
+                git url: 'https://github.com/hamzaamish/my-app.git', credentialsId: '1fa18606-48c2-4009-a485-b7b4cdc419c5'
             }
         }
 
-        stage('Build') {
+        stage('Build Docker Image') {
             steps {
                 script {
-                    // Build the Docker image
+                    // Build Docker image
                     sh "docker build -t ${DOCKER_IMAGE} ."
                 }
             }
         }
 
-        stage('Push to Docker Hub') {
+        stage('Login to Docker Hub') {
             steps {
                 script {
-                    // Login to Docker Hub using credentials
+                    // Log in to Docker Hub
                     withCredentials([usernamePassword(credentialsId: '4e00837e-a6dd-4314-af9e-c64a29a1ac84', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
-                        sh "docker push ${DOCKER_IMAGE}"
                     }
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    // Push the built image to Docker Hub
+                    sh "docker push ${DOCKER_IMAGE}"
                 }
             }
         }
@@ -38,7 +45,9 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    sh 'kubectl apply -f deployment.yml'
+                    // Deploy your application using Kubernetes
+                    sh "kubectl apply -f k8s/deployment.yaml"
+                    sh "kubectl apply -f k8s/service.yaml"
                 }
             }
         }
@@ -49,7 +58,7 @@ pipeline {
             echo 'Pipeline completed successfully!'
         }
         failure {
-            echo 'Pipeline failed!'
+            echo 'Pipeline failed. Please check logs.'
         }
     }
 }
