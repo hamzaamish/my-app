@@ -3,15 +3,15 @@ pipeline {
 
     environment {
         DOCKER_USERNAME = 'hamzaamish' // Your Docker Hub username
-        DOCKER_PASSWORD = credentials('docker-credentials') // Your Jenkins credentials ID for Docker
-        GIT_CREDENTIALS_ID = 'github-credentials' // Your Jenkins credentials ID for GitHub
+        DOCKER_PASSWORD = credentials('4e00837e-a6dd-4314-af9e-c64a29a1ac84') // Your Docker credentials ID
+        GIT_CREDENTIALS_ID = '1fa18606-48c2-4009-a485-b7b4cdc419c5' // Your GitHub credentials ID
     }
 
     stages {
         stage('Clone Repository') {
             steps {
                 script {
-                    // Clone the repository with credentials
+                    // Clone the repository with GitHub credentials
                     withCredentials([usernamePassword(credentialsId: GIT_CREDENTIALS_ID, usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
                         sh 'git clone https://$GIT_USERNAME:$GIT_PASSWORD@github.com/hamzaamish/my-app.git'
                         dir('my-app') {
@@ -56,10 +56,10 @@ pipeline {
 
     post {
         success {
-            echo 'Pipeline completed successfully!' // Ensure this line is correctly formatted
+            echo 'Pipeline completed successfully!'
         }
         failure {
-            echo 'Pipeline failed!' // Ensure this line is correctly formatted
+            echo 'Pipeline failed!'
         }
     }
 }
