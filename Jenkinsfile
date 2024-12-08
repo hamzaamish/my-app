@@ -56,4 +56,10 @@ pipeline {
 
     post {
         success {
-            echo 'Pipeline completed
+            echo 'Pipeline completed successfully!' // Ensure this line is correctly formatted
+        }
+        failure {
+            echo 'Pipeline failed!' // Ensure this line is correctly formatted
+        }
+    }
+}
