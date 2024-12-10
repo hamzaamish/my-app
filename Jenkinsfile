@@ -9,7 +9,7 @@ pipeline {
         stage('Checkout SCM') {
             steps {
                 // Checkout code from Git
-                git url: 'https://github.com/hamzaamish/my-app.git', credentialsId: 'your-git-credentials-id'
+                git url: 'https://github.com/hamzaamish/my-app.git', branch: 'main', credentialsId: 'your-git-credentials-id' // Update with actual credentials ID
             }
         }
 
