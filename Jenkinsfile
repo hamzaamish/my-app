@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        KUBECONFIG = '/home/hamza-amish/.minikube/config'// Update this path if necessary
+        KUBECONFIG = '/home/hamza-amish/.kube/config'// Update this path if necessary
     }
 
     stages {
